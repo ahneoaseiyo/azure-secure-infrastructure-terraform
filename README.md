@@ -155,6 +155,18 @@ terraform destroy
 - Verifying Azure settings with Azure CLI rather than relying on code alone
 - Handling sensitive Terraform files safely in version control
 
+## Automated CI and security scanning
+
+The [GitHub Actions workflow](.github/workflows/terraform-security.yml) runs on Terraform changes to `main`, pull requests, or manual dispatch. It checks:
+
+- `terraform fmt -check -recursive` — formatting consistency.
+- `terraform init -backend=false -input=false` and `terraform validate -no-color` — provider setup and configuration validation without accessing an Azure backend.
+- Checkov static analysis — scans Terraform configuration for security findings and fails its job if checks fail.
+
+**Verified CI result:** Both Terraform validation and Checkov completed successfully in the workflow run associated with commit `e0fbba0`: [view run](https://github.com/ahneoaseiyo/azure-secure-infrastructure-terraform/actions/runs/43219573109).
+
+The workflow does not authenticate to Azure or apply infrastructure changes. A passing static scan does not prove the deployed environment is secure.
+
 ## Potential next steps
 
 - Refactor resources into reusable Terraform modules
